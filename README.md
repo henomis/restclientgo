@@ -1,4 +1,8 @@
 # RESTclientGo
+
+[![Build Status](https://github.com/henomis/restclientgo/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/henomis/restclientgo/actions/workflows/test.yml?query=branch%3Amain) [![GoDoc](https://godoc.org/github.com/henomis/restclientgo?status.svg)](https://godoc.org/github.com/henomis/restclientgo) [![Go Report Card](https://goreportcard.com/badge/github.com/henomis/restclientgo)](https://goreportcard.com/report/github.com/henomis/restclientgo) [![GitHub release](https://img.shields.io/github/release/henomis/restclientgo.svg)](https://github.com/henomis/restclientgo/releases)
+
+
 REST client for Go focusing on Request and Response data modeling.
 
 ## Rest methods
