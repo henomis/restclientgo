@@ -49,9 +49,7 @@ func (r *UpdatePostResponse) Decode(body io.ReadCloser) error {
 	return json.NewDecoder(body).Decode(r)
 }
 
-func (r *UpdatePostResponse) SetBody(body io.ReadCloser) {
-	defer body.Close()
-}
+func (r *UpdatePostResponse) SetBody(body io.Reader) {}
 
 func (r *UpdatePostResponse) AcceptContentType() string {
 	return "application/json"

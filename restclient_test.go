@@ -28,9 +28,9 @@ func (r *TodoResponse) Decode(body io.ReadCloser) error {
 	defer body.Close()
 	return json.NewDecoder(body).Decode(r)
 }
-func (r *TodoResponse) SetBody(body io.ReadCloser) { defer body.Close() }
-func (r *TodoResponse) AcceptContentType() string  { return "application/json" }
-func (r *TodoResponse) SetStatusCode(code int)     { r.HTTPStatusCode = code }
+func (r *TodoResponse) SetBody(body io.Reader)    {}
+func (r *TodoResponse) AcceptContentType() string { return "application/json" }
+func (r *TodoResponse) SetStatusCode(code int)    { r.HTTPStatusCode = code }
 
 //---------------------------------------------
 
@@ -51,9 +51,9 @@ func (r *DeletePostResponse) Decode(body io.ReadCloser) error {
 	defer body.Close()
 	return nil
 }
-func (r *DeletePostResponse) SetBody(body io.ReadCloser) { defer body.Close() }
-func (r *DeletePostResponse) AcceptContentType() string  { return "" }
-func (r *DeletePostResponse) SetStatusCode(code int)     { r.HTTPStatusCode = code }
+func (r *DeletePostResponse) SetBody(body io.Reader)    {}
+func (r *DeletePostResponse) AcceptContentType() string { return "" }
+func (r *DeletePostResponse) SetStatusCode(code int)    { r.HTTPStatusCode = code }
 
 // ---------------------------------------------
 
@@ -86,9 +86,9 @@ func (r *UpdatePostResponse) Decode(body io.ReadCloser) error {
 	defer body.Close()
 	return json.NewDecoder(body).Decode(r)
 }
-func (r *UpdatePostResponse) SetBody(body io.ReadCloser) { defer body.Close() }
-func (r *UpdatePostResponse) AcceptContentType() string  { return "application/json" }
-func (r *UpdatePostResponse) SetStatusCode(code int)     { r.HTTPStatusCode = code }
+func (r *UpdatePostResponse) SetBody(body io.Reader)    {}
+func (r *UpdatePostResponse) AcceptContentType() string { return "application/json" }
+func (r *UpdatePostResponse) SetStatusCode(code int)    { r.HTTPStatusCode = code }
 
 // ---------------------------------------------
 
@@ -122,9 +122,9 @@ func (r *CreatePostResponse) Decode(body io.ReadCloser) error {
 	defer body.Close()
 	return json.NewDecoder(body).Decode(r)
 }
-func (r *CreatePostResponse) SetBody(body io.ReadCloser) { defer body.Close() }
-func (r *CreatePostResponse) AcceptContentType() string  { return "application/json" }
-func (r *CreatePostResponse) SetStatusCode(code int)     { r.HTTPStatusCode = code }
+func (r *CreatePostResponse) SetBody(body io.Reader)    {}
+func (r *CreatePostResponse) AcceptContentType() string { return "application/json" }
+func (r *CreatePostResponse) SetStatusCode(code int)    { r.HTTPStatusCode = code }
 
 // ---------------------------------------------
 
