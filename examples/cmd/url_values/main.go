@@ -22,8 +22,8 @@ func (r *commentsRequest) Path() (string, error) {
 	return "/comments?" + urlValues.Encode(), nil
 }
 
-func (r *commentsRequest) Encode() (string, error) {
-	return "", nil
+func (r *commentsRequest) Encode() (io.Reader, error) {
+	return nil, nil
 }
 
 func (r *commentsRequest) ContentType() string {

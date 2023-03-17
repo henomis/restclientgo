@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -20,9 +21,13 @@ func (r *createPostRequest) Path() (string, error) {
 	return "/posts", nil
 }
 
-func (r *createPostRequest) Encode() (string, error) {
+func (r *createPostRequest) Encode() (io.Reader, error) {
 	jsonBytes, err := json.Marshal(r)
-	return string(jsonBytes), err
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes.NewReader(jsonBytes), nil
 }
 
 func (r *createPostRequest) ContentType() string {

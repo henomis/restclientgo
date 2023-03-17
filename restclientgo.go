@@ -42,7 +42,7 @@ type Request interface {
 	// Path returns the path of the request including the query string if any.
 	Path() (string, error)
 	// Encode return the encoded representation of the request.
-	Encode() (string, error)
+	Encode() (io.Reader, error)
 	ContentType() string
 }
 
@@ -120,7 +120,7 @@ func (r *RestClient) do(method httpMethod, request Request, response Response) e
 	}
 
 	requestURL := r.endpoint + requestPath
-	httpRequest, err := http.NewRequest(string(method), requestURL, strings.NewReader(requestEncodedBody))
+	httpRequest, err := http.NewRequest(string(method), requestURL, requestEncodedBody)
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrHTTPRequest, err)
 	}

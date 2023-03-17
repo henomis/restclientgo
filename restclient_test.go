@@ -1,6 +1,7 @@
 package restclientgo
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -19,9 +20,9 @@ type TodoResponse struct {
 	Completed      bool   `json:"completed"`
 }
 
-func (r *todoRequest) Path() (string, error)   { return "/todos/" + r.ID, nil }
-func (r *todoRequest) Encode() (string, error) { return "", nil }
-func (r *todoRequest) ContentType() string     { return "" }
+func (r *todoRequest) Path() (string, error)      { return "/todos/" + r.ID, nil }
+func (r *todoRequest) Encode() (io.Reader, error) { return nil, nil }
+func (r *todoRequest) ContentType() string        { return "" }
 func (r *TodoResponse) Decode(body io.ReadCloser) error {
 	defer body.Close()
 	return json.NewDecoder(body).Decode(r)
@@ -43,8 +44,8 @@ type DeletePostResponse struct {
 
 func (r *deletePostRequest) Path() (string, error) { return "/posts/" + fmt.Sprintf("%d", r.ID), nil }
 
-func (r *deletePostRequest) Encode() (string, error) { return "", nil }
-func (r *deletePostRequest) ContentType() string     { return "" }
+func (r *deletePostRequest) Encode() (io.Reader, error) { return nil, nil }
+func (r *deletePostRequest) ContentType() string        { return "" }
 func (r *DeletePostResponse) Decode(body io.ReadCloser) error {
 	defer body.Close()
 	return nil
@@ -71,9 +72,13 @@ type UpdatePostResponse struct {
 }
 
 func (r *updatePostRequest) Path() (string, error) { return "/posts/" + fmt.Sprintf("%d", r.ID), nil }
-func (r *updatePostRequest) Encode() (string, error) {
+func (r *updatePostRequest) Encode() (io.Reader, error) {
 	jsonBytes, err := json.Marshal(r)
-	return string(jsonBytes), err
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes.NewReader(jsonBytes), nil
 }
 func (r *updatePostRequest) ContentType() string { return "application/json; charset=UTF-8" }
 func (r *UpdatePostResponse) Decode(body io.ReadCloser) error {
@@ -103,9 +108,13 @@ type CreatePostResponse struct {
 }
 
 func (r *createPostRequest) Path() (string, error) { return "/posts", nil }
-func (r *createPostRequest) Encode() (string, error) {
+func (r *createPostRequest) Encode() (io.Reader, error) {
 	jsonBytes, err := json.Marshal(r)
-	return string(jsonBytes), err
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes.NewReader(jsonBytes), nil
 }
 func (r *createPostRequest) ContentType() string { return "application/json" }
 func (r *CreatePostResponse) Decode(body io.ReadCloser) error {

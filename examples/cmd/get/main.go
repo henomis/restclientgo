@@ -18,8 +18,8 @@ func (r *todoRequest) Path() (string, error) {
 	return "/todos/" + r.ID, nil
 }
 
-func (r *todoRequest) Encode() (string, error) {
-	return "", nil
+func (r *todoRequest) Encode() (io.Reader, error) {
+	return nil, nil
 }
 
 func (r *todoRequest) ContentType() string {

@@ -18,8 +18,8 @@ func (r *deletePostRequest) Path() (string, error) {
 	return "/posts/" + fmt.Sprintf("%d", r.ID), nil
 }
 
-func (r *deletePostRequest) Encode() (string, error) {
-	return "", nil
+func (r *deletePostRequest) Encode() (io.Reader, error) {
+	return nil, nil
 }
 
 func (r *deletePostRequest) ContentType() string {

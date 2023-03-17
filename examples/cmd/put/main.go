@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -21,9 +22,13 @@ func (r *updatePostRequest) Path() (string, error) {
 	return "/posts/" + fmt.Sprintf("%d", r.ID), nil
 }
 
-func (r *updatePostRequest) Encode() (string, error) {
+func (r *updatePostRequest) Encode() (io.Reader, error) {
 	jsonBytes, err := json.Marshal(r)
-	return string(jsonBytes), err
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes.NewReader(jsonBytes), nil
 }
 
 func (r *updatePostRequest) ContentType() string {
