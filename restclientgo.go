@@ -1,6 +1,7 @@
 package restclientgo
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -84,31 +85,31 @@ func (r *RestClient) SetRequestModifier(requestModifier func(*http.Request) *htt
 }
 
 // Get performs a GET request.
-func (r *RestClient) Get(request Request, response Response) error {
-	return r.do(methodGet, request, response)
+func (r *RestClient) Get(ctx context.Context, request Request, response Response) error {
+	return r.do(ctx, methodGet, request, response)
 }
 
 // Post performs a POST request.
-func (r *RestClient) Post(request Request, response Response) error {
-	return r.do(methodPost, request, response)
+func (r *RestClient) Post(ctx context.Context, request Request, response Response) error {
+	return r.do(ctx, methodPost, request, response)
 }
 
 // Delete performs a DELETE request.
-func (r *RestClient) Delete(request Request, response Response) error {
-	return r.do(methodDelete, request, response)
+func (r *RestClient) Delete(ctx context.Context, request Request, response Response) error {
+	return r.do(ctx, methodDelete, request, response)
 }
 
 // Put performs a PUT request.
-func (r *RestClient) Put(request Request, response Response) error {
-	return r.do(methodPut, request, response)
+func (r *RestClient) Put(ctx context.Context, request Request, response Response) error {
+	return r.do(ctx, methodPut, request, response)
 }
 
 // Patch performs a PATCH request.
-func (r *RestClient) Patch(request Request, response Response) error {
-	return r.do(methodPatch, request, response)
+func (r *RestClient) Patch(ctx context.Context, request Request, response Response) error {
+	return r.do(ctx, methodPatch, request, response)
 }
 
-func (r *RestClient) do(method httpMethod, request Request, response Response) error {
+func (r *RestClient) do(ctx context.Context, method httpMethod, request Request, response Response) error {
 	requestPath, err := request.Path()
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrRequestPath, err)
@@ -132,6 +133,8 @@ func (r *RestClient) do(method httpMethod, request Request, response Response) e
 	if r.requestModifier != nil {
 		httpRequest = r.requestModifier(httpRequest)
 	}
+
+	httpRequest = httpRequest.WithContext(ctx)
 
 	httpResponse, err := r.httpClient.Do(httpRequest)
 	if err != nil {

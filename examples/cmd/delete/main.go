@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -59,6 +60,7 @@ func main() {
 	var deletePostResponse DeletePostResponse
 
 	err := restClient.Delete(
+		context.Background(),
 		&deletePostRequest{ID: 1},
 		&deletePostResponse,
 	)

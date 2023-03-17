@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -70,6 +71,7 @@ func main() {
 	var commentsResponse CommentsResponse
 
 	err := restClient.Get(
+		context.Background(),
 		&commentsRequest{PostID: "1"},
 		&commentsResponse,
 	)

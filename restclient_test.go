@@ -2,6 +2,7 @@ package restclientgo
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -134,6 +135,7 @@ func TestRestClient_Get(t *testing.T) {
 		requestModifier func(*http.Request) *http.Request
 	}
 	type args struct {
+		ctx      context.Context
 		request  Request
 		response Response
 	}
@@ -155,6 +157,7 @@ func TestRestClient_Get(t *testing.T) {
 				},
 			},
 			args: args{
+				ctx: context.Background(),
 				request: &todoRequest{
 					ID: "1",
 				},
@@ -179,6 +182,7 @@ func TestRestClient_Get(t *testing.T) {
 				},
 			},
 			args: args{
+				ctx: context.Background(),
 				request: &todoRequest{
 					ID: "1",
 				},
@@ -200,7 +204,7 @@ func TestRestClient_Get(t *testing.T) {
 				endpoint:        tt.fields.endpoint,
 				requestModifier: tt.fields.requestModifier,
 			}
-			if err := r.Get(tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
+			if err := r.Get(tt.args.ctx, tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
 				t.Errorf("RestClient.Get() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
@@ -231,6 +235,7 @@ func TestRestClient_Delete(t *testing.T) {
 		requestModifier func(*http.Request) *http.Request
 	}
 	type args struct {
+		ctx      context.Context
 		request  Request
 		response Response
 	}
@@ -251,6 +256,7 @@ func TestRestClient_Delete(t *testing.T) {
 				},
 			},
 			args: args{
+				ctx: context.Background(),
 				request: &deletePostRequest{
 					ID: 1,
 				},
@@ -266,7 +272,7 @@ func TestRestClient_Delete(t *testing.T) {
 				endpoint:        tt.fields.endpoint,
 				requestModifier: tt.fields.requestModifier,
 			}
-			if err := r.Delete(tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
+			if err := r.Delete(tt.args.ctx, tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
 				t.Errorf("RestClient.Delete() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -280,6 +286,7 @@ func TestRestClient_Patch(t *testing.T) {
 		requestModifier func(*http.Request) *http.Request
 	}
 	type args struct {
+		ctx      context.Context
 		request  Request
 		response Response
 	}
@@ -301,6 +308,7 @@ func TestRestClient_Patch(t *testing.T) {
 				},
 			},
 			args: args{
+				ctx: context.Background(),
 				request: &updatePostRequest{
 					Title: "foo",
 				},
@@ -319,7 +327,7 @@ func TestRestClient_Patch(t *testing.T) {
 				endpoint:        tt.fields.endpoint,
 				requestModifier: tt.fields.requestModifier,
 			}
-			if err := r.Patch(tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
+			if err := r.Patch(tt.args.ctx, tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
 				t.Errorf("RestClient.Patch() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
@@ -350,6 +358,7 @@ func TestRestClient_Post(t *testing.T) {
 		requestModifier func(*http.Request) *http.Request
 	}
 	type args struct {
+		ctx      context.Context
 		request  Request
 		response Response
 	}
@@ -371,6 +380,7 @@ func TestRestClient_Post(t *testing.T) {
 				},
 			},
 			args: args{
+				ctx: context.Background(),
 				request: &createPostRequest{
 					Title:  "foo",
 					Body:   "bar",
@@ -394,7 +404,7 @@ func TestRestClient_Post(t *testing.T) {
 				endpoint:        tt.fields.endpoint,
 				requestModifier: tt.fields.requestModifier,
 			}
-			if err := r.Post(tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
+			if err := r.Post(tt.args.ctx, tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
 				t.Errorf("RestClient.Post() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
@@ -425,6 +435,7 @@ func TestRestClient_Put(t *testing.T) {
 		requestModifier func(*http.Request) *http.Request
 	}
 	type args struct {
+		ctx      context.Context
 		request  Request
 		response Response
 	}
@@ -446,6 +457,7 @@ func TestRestClient_Put(t *testing.T) {
 				},
 			},
 			args: args{
+				ctx: context.Background(),
 				request: &updatePostRequest{
 					ID:     1,
 					Title:  "foo",
@@ -470,7 +482,7 @@ func TestRestClient_Put(t *testing.T) {
 				endpoint:        tt.fields.endpoint,
 				requestModifier: tt.fields.requestModifier,
 			}
-			if err := r.Put(tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
+			if err := r.Put(tt.args.ctx, tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
 				t.Errorf("RestClient.Put() error = %v, wantErr %v", err, tt.wantErr)
 			}
 

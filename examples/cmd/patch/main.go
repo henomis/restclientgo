@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -72,6 +73,7 @@ func main() {
 	var updatePostResponse UpdatePostResponse
 
 	err := restClient.Patch(
+		context.Background(),
 		&updatePostRequest{
 			Title: "foo",
 		},

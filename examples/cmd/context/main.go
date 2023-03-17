@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/henomis/restclientgo"
 )
@@ -61,10 +62,12 @@ func main() {
 		return req
 	})
 
-	var todoResponse TodoResponse
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Microsecond)
+	defer cancel()
 
+	var todoResponse TodoResponse
 	err := restClient.Get(
-		context.Background(),
+		ctx,
 		&todoRequest{ID: "1"},
 		&todoResponse,
 	)
