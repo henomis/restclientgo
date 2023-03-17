@@ -36,9 +36,7 @@ func (r *DeletePostResponse) Decode(body io.ReadCloser) error {
 	return nil
 }
 
-func (r *DeletePostResponse) SetBody(body io.ReadCloser) {
-	defer body.Close()
-}
+func (r *DeletePostResponse) SetBody(body io.Reader) {}
 
 func (r *DeletePostResponse) AcceptContentType() string {
 	return ""

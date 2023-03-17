@@ -30,7 +30,7 @@ func (r *MyRequest) Path() (string, error) {
     // Return the path of the request including the query string if any.
 }
 
-func (r *MyRequest) Encode() (string, error) {
+func (r *MyRequest) Encode() (io.Reader, error) {
     // Return the request body as string
 }
 
@@ -49,11 +49,11 @@ type MyResponse struct {
     // ...
 }
 
-func (r *MyResponse) Decode(body io.Reader) error {
+func (r *MyResponse) Decode(body io.ReadCloser) error {
     // Decode the response body into the response model
 }
 
-func (r *MyResponse) SetBody(body io.ReadCloser) {
+func (r *MyResponse) SetBody(body io.Reader) {
     // Set the response body if needed
 }
 

@@ -53,7 +53,7 @@ type Response interface {
 	Decode(body io.ReadCloser) error
 	// SetBody sets the response raw body if the response is a success but
 	// the content type is not json.
-	SetBody(body io.ReadCloser)
+	SetBody(body io.Reader)
 	// AcceptContentType returns the content type that the response should be decoded to.
 	AcceptContentType() string
 	// SetStatusCode sets the HTTP response status code.
