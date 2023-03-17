@@ -122,7 +122,7 @@ func TestRestClient_Get(t *testing.T) {
 	type fields struct {
 		httpClient      *http.Client
 		endpoint        string
-		requestModifier func(*http.Request)
+		requestModifier func(*http.Request) *http.Request
 	}
 	type args struct {
 		request  Request
@@ -140,8 +140,9 @@ func TestRestClient_Get(t *testing.T) {
 			fields: fields{
 				httpClient: http.DefaultClient,
 				endpoint:   "https://jsonplaceholder.typicode.com",
-				requestModifier: func(req *http.Request) {
+				requestModifier: func(req *http.Request) *http.Request {
 					req.Header.Set("Accept", "application/json")
+					return req
 				},
 			},
 			args: args{
@@ -163,8 +164,9 @@ func TestRestClient_Get(t *testing.T) {
 			fields: fields{
 				httpClient: http.DefaultClient,
 				endpoint:   "https://jsonplaceholder.typicode.com",
-				requestModifier: func(req *http.Request) {
+				requestModifier: func(req *http.Request) *http.Request {
 					req.Header.Set("Accept", "application/json")
+					return req
 				},
 			},
 			args: args{
@@ -217,7 +219,7 @@ func TestRestClient_Delete(t *testing.T) {
 	type fields struct {
 		httpClient      *http.Client
 		endpoint        string
-		requestModifier func(*http.Request)
+		requestModifier func(*http.Request) *http.Request
 	}
 	type args struct {
 		request  Request
@@ -234,8 +236,9 @@ func TestRestClient_Delete(t *testing.T) {
 			fields: fields{
 				httpClient: http.DefaultClient,
 				endpoint:   "https://jsonplaceholder.typicode.com",
-				requestModifier: func(req *http.Request) {
+				requestModifier: func(req *http.Request) *http.Request {
 					req.Header.Set("Accept", "application/json")
+					return req
 				},
 			},
 			args: args{
@@ -265,7 +268,7 @@ func TestRestClient_Patch(t *testing.T) {
 	type fields struct {
 		httpClient      *http.Client
 		endpoint        string
-		requestModifier func(*http.Request)
+		requestModifier func(*http.Request) *http.Request
 	}
 	type args struct {
 		request  Request
@@ -283,8 +286,9 @@ func TestRestClient_Patch(t *testing.T) {
 			fields: fields{
 				httpClient: http.DefaultClient,
 				endpoint:   "https://jsonplaceholder.typicode.com",
-				requestModifier: func(req *http.Request) {
+				requestModifier: func(req *http.Request) *http.Request {
 					req.Header.Set("Accept", "application/json")
+					return req
 				},
 			},
 			args: args{
@@ -334,7 +338,7 @@ func TestRestClient_Post(t *testing.T) {
 	type fields struct {
 		httpClient      *http.Client
 		endpoint        string
-		requestModifier func(*http.Request)
+		requestModifier func(*http.Request) *http.Request
 	}
 	type args struct {
 		request  Request
@@ -352,8 +356,9 @@ func TestRestClient_Post(t *testing.T) {
 			fields: fields{
 				httpClient: http.DefaultClient,
 				endpoint:   "https://jsonplaceholder.typicode.com",
-				requestModifier: func(req *http.Request) {
+				requestModifier: func(req *http.Request) *http.Request {
 					req.Header.Set("Accept", "application/json")
+					return req
 				},
 			},
 			args: args{
@@ -408,7 +413,7 @@ func TestRestClient_Put(t *testing.T) {
 	type fields struct {
 		httpClient      *http.Client
 		endpoint        string
-		requestModifier func(*http.Request)
+		requestModifier func(*http.Request) *http.Request
 	}
 	type args struct {
 		request  Request
@@ -426,8 +431,9 @@ func TestRestClient_Put(t *testing.T) {
 			fields: fields{
 				httpClient: http.DefaultClient,
 				endpoint:   "https://jsonplaceholder.typicode.com",
-				requestModifier: func(req *http.Request) {
+				requestModifier: func(req *http.Request) *http.Request {
 					req.Header.Set("Accept", "application/json")
+					return req
 				},
 			},
 			args: args{

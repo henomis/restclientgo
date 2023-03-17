@@ -62,8 +62,9 @@ func main() {
 
 	restClient := restclientgo.New("https://jsonplaceholder.typicode.com")
 
-	restClient.SetRequestModifier(func(req *http.Request) {
+	restClient.SetRequestModifier(func(req *http.Request) *http.Request {
 		req.Header.Set("Accept", "application/json")
+		return req
 	})
 
 	var commentsResponse CommentsResponse

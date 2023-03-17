@@ -11,7 +11,7 @@ import (
 type RestClient struct {
 	httpClient      *http.Client
 	endpoint        string
-	requestModifier func(*http.Request)
+	requestModifier func(*http.Request) *http.Request
 }
 
 type Error string
@@ -79,7 +79,7 @@ func (r *RestClient) SetHTTPClient(client *http.Client) {
 }
 
 // SetRequestModifier adds a function that will modify each request
-func (r *RestClient) SetRequestModifier(requestModifier func(*http.Request)) {
+func (r *RestClient) SetRequestModifier(requestModifier func(*http.Request) *http.Request) {
 	r.requestModifier = requestModifier
 }
 
@@ -130,7 +130,7 @@ func (r *RestClient) do(method httpMethod, request Request, response Response) e
 	}
 
 	if r.requestModifier != nil {
-		r.requestModifier(httpRequest)
+		httpRequest = r.requestModifier(httpRequest)
 	}
 
 	httpResponse, err := r.httpClient.Do(httpRequest)
