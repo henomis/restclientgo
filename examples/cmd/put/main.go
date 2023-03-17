@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -21,9 +23,13 @@ func (r *updatePostRequest) Path() (string, error) {
 	return "/posts/" + fmt.Sprintf("%d", r.ID), nil
 }
 
-func (r *updatePostRequest) Encode() (string, error) {
+func (r *updatePostRequest) Encode() (io.Reader, error) {
 	jsonBytes, err := json.Marshal(r)
-	return string(jsonBytes), err
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes.NewReader(jsonBytes), nil
 }
 
 func (r *updatePostRequest) ContentType() string {
@@ -59,13 +65,15 @@ func main() {
 
 	restClient := restclientgo.New("https://jsonplaceholder.typicode.com")
 
-	restClient.SetRequestModifier(func(req *http.Request) {
+	restClient.SetRequestModifier(func(req *http.Request) *http.Request {
 		req.Header.Set("Accept", "application/json")
+		return req
 	})
 
 	var updatePostResponse UpdatePostResponse
 
 	err := restClient.Put(
+		context.Background(),
 		&updatePostRequest{
 			ID:     1,
 			Title:  "foo",

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -22,8 +23,8 @@ func (r *commentsRequest) Path() (string, error) {
 	return "/comments?" + urlValues.Encode(), nil
 }
 
-func (r *commentsRequest) Encode() (string, error) {
-	return "", nil
+func (r *commentsRequest) Encode() (io.Reader, error) {
+	return nil, nil
 }
 
 func (r *commentsRequest) ContentType() string {
@@ -62,13 +63,15 @@ func main() {
 
 	restClient := restclientgo.New("https://jsonplaceholder.typicode.com")
 
-	restClient.SetRequestModifier(func(req *http.Request) {
+	restClient.SetRequestModifier(func(req *http.Request) *http.Request {
 		req.Header.Set("Accept", "application/json")
+		return req
 	})
 
 	var commentsResponse CommentsResponse
 
 	err := restClient.Get(
+		context.Background(),
 		&commentsRequest{PostID: "1"},
 		&commentsResponse,
 	)

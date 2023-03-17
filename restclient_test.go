@@ -1,6 +1,8 @@
 package restclientgo
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -19,9 +21,9 @@ type TodoResponse struct {
 	Completed      bool   `json:"completed"`
 }
 
-func (r *todoRequest) Path() (string, error)   { return "/todos/" + r.ID, nil }
-func (r *todoRequest) Encode() (string, error) { return "", nil }
-func (r *todoRequest) ContentType() string     { return "" }
+func (r *todoRequest) Path() (string, error)      { return "/todos/" + r.ID, nil }
+func (r *todoRequest) Encode() (io.Reader, error) { return nil, nil }
+func (r *todoRequest) ContentType() string        { return "" }
 func (r *TodoResponse) Decode(body io.ReadCloser) error {
 	defer body.Close()
 	return json.NewDecoder(body).Decode(r)
@@ -43,8 +45,8 @@ type DeletePostResponse struct {
 
 func (r *deletePostRequest) Path() (string, error) { return "/posts/" + fmt.Sprintf("%d", r.ID), nil }
 
-func (r *deletePostRequest) Encode() (string, error) { return "", nil }
-func (r *deletePostRequest) ContentType() string     { return "" }
+func (r *deletePostRequest) Encode() (io.Reader, error) { return nil, nil }
+func (r *deletePostRequest) ContentType() string        { return "" }
 func (r *DeletePostResponse) Decode(body io.ReadCloser) error {
 	defer body.Close()
 	return nil
@@ -71,9 +73,13 @@ type UpdatePostResponse struct {
 }
 
 func (r *updatePostRequest) Path() (string, error) { return "/posts/" + fmt.Sprintf("%d", r.ID), nil }
-func (r *updatePostRequest) Encode() (string, error) {
+func (r *updatePostRequest) Encode() (io.Reader, error) {
 	jsonBytes, err := json.Marshal(r)
-	return string(jsonBytes), err
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes.NewReader(jsonBytes), nil
 }
 func (r *updatePostRequest) ContentType() string { return "application/json; charset=UTF-8" }
 func (r *UpdatePostResponse) Decode(body io.ReadCloser) error {
@@ -103,9 +109,13 @@ type CreatePostResponse struct {
 }
 
 func (r *createPostRequest) Path() (string, error) { return "/posts", nil }
-func (r *createPostRequest) Encode() (string, error) {
+func (r *createPostRequest) Encode() (io.Reader, error) {
 	jsonBytes, err := json.Marshal(r)
-	return string(jsonBytes), err
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes.NewReader(jsonBytes), nil
 }
 func (r *createPostRequest) ContentType() string { return "application/json" }
 func (r *CreatePostResponse) Decode(body io.ReadCloser) error {
@@ -122,9 +132,10 @@ func TestRestClient_Get(t *testing.T) {
 	type fields struct {
 		httpClient      *http.Client
 		endpoint        string
-		requestModifier func(*http.Request)
+		requestModifier func(*http.Request) *http.Request
 	}
 	type args struct {
+		ctx      context.Context
 		request  Request
 		response Response
 	}
@@ -140,11 +151,13 @@ func TestRestClient_Get(t *testing.T) {
 			fields: fields{
 				httpClient: http.DefaultClient,
 				endpoint:   "https://jsonplaceholder.typicode.com",
-				requestModifier: func(req *http.Request) {
+				requestModifier: func(req *http.Request) *http.Request {
 					req.Header.Set("Accept", "application/json")
+					return req
 				},
 			},
 			args: args{
+				ctx: context.Background(),
 				request: &todoRequest{
 					ID: "1",
 				},
@@ -163,11 +176,13 @@ func TestRestClient_Get(t *testing.T) {
 			fields: fields{
 				httpClient: http.DefaultClient,
 				endpoint:   "https://jsonplaceholder.typicode.com",
-				requestModifier: func(req *http.Request) {
+				requestModifier: func(req *http.Request) *http.Request {
 					req.Header.Set("Accept", "application/json")
+					return req
 				},
 			},
 			args: args{
+				ctx: context.Background(),
 				request: &todoRequest{
 					ID: "1",
 				},
@@ -189,7 +204,7 @@ func TestRestClient_Get(t *testing.T) {
 				endpoint:        tt.fields.endpoint,
 				requestModifier: tt.fields.requestModifier,
 			}
-			if err := r.Get(tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
+			if err := r.Get(tt.args.ctx, tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
 				t.Errorf("RestClient.Get() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
@@ -217,9 +232,10 @@ func TestRestClient_Delete(t *testing.T) {
 	type fields struct {
 		httpClient      *http.Client
 		endpoint        string
-		requestModifier func(*http.Request)
+		requestModifier func(*http.Request) *http.Request
 	}
 	type args struct {
+		ctx      context.Context
 		request  Request
 		response Response
 	}
@@ -234,11 +250,13 @@ func TestRestClient_Delete(t *testing.T) {
 			fields: fields{
 				httpClient: http.DefaultClient,
 				endpoint:   "https://jsonplaceholder.typicode.com",
-				requestModifier: func(req *http.Request) {
+				requestModifier: func(req *http.Request) *http.Request {
 					req.Header.Set("Accept", "application/json")
+					return req
 				},
 			},
 			args: args{
+				ctx: context.Background(),
 				request: &deletePostRequest{
 					ID: 1,
 				},
@@ -254,7 +272,7 @@ func TestRestClient_Delete(t *testing.T) {
 				endpoint:        tt.fields.endpoint,
 				requestModifier: tt.fields.requestModifier,
 			}
-			if err := r.Delete(tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
+			if err := r.Delete(tt.args.ctx, tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
 				t.Errorf("RestClient.Delete() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -265,9 +283,10 @@ func TestRestClient_Patch(t *testing.T) {
 	type fields struct {
 		httpClient      *http.Client
 		endpoint        string
-		requestModifier func(*http.Request)
+		requestModifier func(*http.Request) *http.Request
 	}
 	type args struct {
+		ctx      context.Context
 		request  Request
 		response Response
 	}
@@ -283,11 +302,13 @@ func TestRestClient_Patch(t *testing.T) {
 			fields: fields{
 				httpClient: http.DefaultClient,
 				endpoint:   "https://jsonplaceholder.typicode.com",
-				requestModifier: func(req *http.Request) {
+				requestModifier: func(req *http.Request) *http.Request {
 					req.Header.Set("Accept", "application/json")
+					return req
 				},
 			},
 			args: args{
+				ctx: context.Background(),
 				request: &updatePostRequest{
 					Title: "foo",
 				},
@@ -306,7 +327,7 @@ func TestRestClient_Patch(t *testing.T) {
 				endpoint:        tt.fields.endpoint,
 				requestModifier: tt.fields.requestModifier,
 			}
-			if err := r.Patch(tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
+			if err := r.Patch(tt.args.ctx, tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
 				t.Errorf("RestClient.Patch() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
@@ -334,9 +355,10 @@ func TestRestClient_Post(t *testing.T) {
 	type fields struct {
 		httpClient      *http.Client
 		endpoint        string
-		requestModifier func(*http.Request)
+		requestModifier func(*http.Request) *http.Request
 	}
 	type args struct {
+		ctx      context.Context
 		request  Request
 		response Response
 	}
@@ -352,11 +374,13 @@ func TestRestClient_Post(t *testing.T) {
 			fields: fields{
 				httpClient: http.DefaultClient,
 				endpoint:   "https://jsonplaceholder.typicode.com",
-				requestModifier: func(req *http.Request) {
+				requestModifier: func(req *http.Request) *http.Request {
 					req.Header.Set("Accept", "application/json")
+					return req
 				},
 			},
 			args: args{
+				ctx: context.Background(),
 				request: &createPostRequest{
 					Title:  "foo",
 					Body:   "bar",
@@ -380,7 +404,7 @@ func TestRestClient_Post(t *testing.T) {
 				endpoint:        tt.fields.endpoint,
 				requestModifier: tt.fields.requestModifier,
 			}
-			if err := r.Post(tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
+			if err := r.Post(tt.args.ctx, tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
 				t.Errorf("RestClient.Post() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
@@ -408,9 +432,10 @@ func TestRestClient_Put(t *testing.T) {
 	type fields struct {
 		httpClient      *http.Client
 		endpoint        string
-		requestModifier func(*http.Request)
+		requestModifier func(*http.Request) *http.Request
 	}
 	type args struct {
+		ctx      context.Context
 		request  Request
 		response Response
 	}
@@ -426,11 +451,13 @@ func TestRestClient_Put(t *testing.T) {
 			fields: fields{
 				httpClient: http.DefaultClient,
 				endpoint:   "https://jsonplaceholder.typicode.com",
-				requestModifier: func(req *http.Request) {
+				requestModifier: func(req *http.Request) *http.Request {
 					req.Header.Set("Accept", "application/json")
+					return req
 				},
 			},
 			args: args{
+				ctx: context.Background(),
 				request: &updatePostRequest{
 					ID:     1,
 					Title:  "foo",
@@ -455,7 +482,7 @@ func TestRestClient_Put(t *testing.T) {
 				endpoint:        tt.fields.endpoint,
 				requestModifier: tt.fields.requestModifier,
 			}
-			if err := r.Put(tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
+			if err := r.Put(tt.args.ctx, tt.args.request, tt.args.response); (err != nil) != tt.wantErr {
 				t.Errorf("RestClient.Put() error = %v, wantErr %v", err, tt.wantErr)
 			}
 

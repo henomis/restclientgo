@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -18,8 +19,8 @@ func (r *deletePostRequest) Path() (string, error) {
 	return "/posts/" + fmt.Sprintf("%d", r.ID), nil
 }
 
-func (r *deletePostRequest) Encode() (string, error) {
-	return "", nil
+func (r *deletePostRequest) Encode() (io.Reader, error) {
+	return nil, nil
 }
 
 func (r *deletePostRequest) ContentType() string {
@@ -51,13 +52,15 @@ func main() {
 
 	restClient := restclientgo.New("https://jsonplaceholder.typicode.com")
 
-	restClient.SetRequestModifier(func(req *http.Request) {
+	restClient.SetRequestModifier(func(req *http.Request) *http.Request {
 		req.Header.Set("Accept", "application/json")
+		return req
 	})
 
 	var deletePostResponse DeletePostResponse
 
 	err := restClient.Delete(
+		context.Background(),
 		&deletePostRequest{ID: 1},
 		&deletePostResponse,
 	)
