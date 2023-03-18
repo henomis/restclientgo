@@ -53,11 +53,11 @@ func (r *MyResponse) Decode(body io.Reader) error {
     // Decode the response body into the response model
 }
 
-func (r *MyResponse) SetBody(body io.Reader) {
+func (r *MyResponse) SetBody(body io.Reader) error {
     // Set the response body if needed
 }
 
-func (r *MyResponse) StatusCode() int {
+func (r *MyResponse) StatusCode(int code) error {
     // Handler to set the HTTP status code of the response
 }
 
