@@ -139,6 +139,7 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrHTTPRequest, err)
 	}
+	defer httpResponse.Body.Close()
 
 	response.SetStatusCode(httpResponse.StatusCode)
 	if httpResponse.StatusCode >= 400 {
