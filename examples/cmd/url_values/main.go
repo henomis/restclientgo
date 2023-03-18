@@ -42,19 +42,22 @@ type CommentsResponse struct {
 	} `json:"data"`
 }
 
-func (r *CommentsResponse) Decode(body io.ReadCloser) error {
-	defer body.Close()
+func (r *CommentsResponse) Decode(body io.Reader) error {
+
 	return json.NewDecoder(body).Decode(&r.Data)
 }
 
-func (r *CommentsResponse) SetBody(body io.Reader) {}
+func (r *CommentsResponse) SetBody(body io.Reader) error {
+	return nil
+}
 
 func (r *CommentsResponse) AcceptContentType() string {
 	return "application/json"
 }
 
-func (r *CommentsResponse) SetStatusCode(code int) {
+func (r *CommentsResponse) SetStatusCode(code int) error {
 	r.HTTPStatusCode = code
+	return nil
 }
 
 func main() {

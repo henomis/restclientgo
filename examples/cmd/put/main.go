@@ -44,19 +44,22 @@ type UpdatePostResponse struct {
 	Body           string `json:"body"`
 }
 
-func (r *UpdatePostResponse) Decode(body io.ReadCloser) error {
-	defer body.Close()
+func (r *UpdatePostResponse) Decode(body io.Reader) error {
+
 	return json.NewDecoder(body).Decode(r)
 }
 
-func (r *UpdatePostResponse) SetBody(body io.Reader) {}
+func (r *UpdatePostResponse) SetBody(body io.Reader) error {
+	return nil
+}
 
 func (r *UpdatePostResponse) AcceptContentType() string {
 	return "application/json"
 }
 
-func (r *UpdatePostResponse) SetStatusCode(code int) {
+func (r *UpdatePostResponse) SetStatusCode(code int) error {
 	r.HTTPStatusCode = code
+	return nil
 }
 
 func main() {

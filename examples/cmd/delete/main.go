@@ -31,19 +31,22 @@ type DeletePostResponse struct {
 	HTTPStatusCode int `json:"-"`
 }
 
-func (r *DeletePostResponse) Decode(body io.ReadCloser) error {
-	defer body.Close()
+func (r *DeletePostResponse) Decode(body io.Reader) error {
+
 	return nil
 }
 
-func (r *DeletePostResponse) SetBody(body io.Reader) {}
+func (r *DeletePostResponse) SetBody(body io.Reader) error {
+	return nil
+}
 
 func (r *DeletePostResponse) AcceptContentType() string {
 	return ""
 }
 
-func (r *DeletePostResponse) SetStatusCode(code int) {
+func (r *DeletePostResponse) SetStatusCode(code int) error {
 	r.HTTPStatusCode = code
+	return nil
 }
 
 func main() {
