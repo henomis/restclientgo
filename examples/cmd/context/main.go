@@ -36,12 +36,13 @@ type TodoResponse struct {
 	Comleted       bool   `json:"completed"`
 }
 
-func (r *TodoResponse) Decode(body io.ReadCloser) error {
-	defer body.Close()
+func (r *TodoResponse) Decode(body io.Reader) error {
+
 	return json.NewDecoder(body).Decode(r)
 }
 
-func (r *TodoResponse) SetBody(body io.Reader) {
+func (r *TodoResponse) SetBody(body io.Reader) error {
+	return nil
 
 }
 
@@ -49,8 +50,9 @@ func (r *TodoResponse) AcceptContentType() string {
 	return "application/json"
 }
 
-func (r *TodoResponse) SetStatusCode(code int) {
+func (r *TodoResponse) SetStatusCode(code int) error {
 	r.HTTPStatusCode = code
+	return nil
 }
 
 func main() {

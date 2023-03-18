@@ -43,19 +43,22 @@ type CreatePostResponse struct {
 	Body           string `json:"body"`
 }
 
-func (r *CreatePostResponse) Decode(body io.ReadCloser) error {
-	defer body.Close()
+func (r *CreatePostResponse) Decode(body io.Reader) error {
+
 	return json.NewDecoder(body).Decode(r)
 }
 
-func (r *CreatePostResponse) SetBody(body io.Reader) {}
+func (r *CreatePostResponse) SetBody(body io.Reader) error {
+	return nil
+}
 
 func (r *CreatePostResponse) AcceptContentType() string {
 	return "application/json"
 }
 
-func (r *CreatePostResponse) SetStatusCode(code int) {
+func (r *CreatePostResponse) SetStatusCode(code int) error {
 	r.HTTPStatusCode = code
+	return nil
 }
 
 func main() {

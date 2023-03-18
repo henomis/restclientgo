@@ -49,7 +49,7 @@ type MyResponse struct {
     // ...
 }
 
-func (r *MyResponse) Decode(body io.ReadCloser) error {
+func (r *MyResponse) Decode(body io.Reader) error {
     // Decode the response body into the response model
 }
 

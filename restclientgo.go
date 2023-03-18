@@ -49,15 +49,14 @@ type Request interface {
 
 type Response interface {
 	// Decode decodes the response body into the given interface if the
-	// response is a success and the content type is json.
-	Decode(body io.ReadCloser) error
-	// SetBody sets the response raw body if the response is a success but
-	// the content type is not json.
-	SetBody(body io.Reader)
+	// response matches the AcceptContentType.
+	Decode(body io.Reader) error
+	// SetBody sets the response raw body if the response can't be decoded.
+	SetBody(body io.Reader) error
 	// AcceptContentType returns the content type that the response should be decoded to.
 	AcceptContentType() string
 	// SetStatusCode sets the HTTP response status code.
-	SetStatusCode(code int)
+	SetStatusCode(code int) error
 }
 
 const (

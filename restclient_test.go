@@ -24,13 +24,18 @@ type TodoResponse struct {
 func (r *todoRequest) Path() (string, error)      { return "/todos/" + r.ID, nil }
 func (r *todoRequest) Encode() (io.Reader, error) { return nil, nil }
 func (r *todoRequest) ContentType() string        { return "" }
-func (r *TodoResponse) Decode(body io.ReadCloser) error {
-	defer body.Close()
+func (r *TodoResponse) Decode(body io.Reader) error {
+
 	return json.NewDecoder(body).Decode(r)
 }
-func (r *TodoResponse) SetBody(body io.Reader)    {}
+func (r *TodoResponse) SetBody(body io.Reader) error {
+	return nil
+}
 func (r *TodoResponse) AcceptContentType() string { return "application/json" }
-func (r *TodoResponse) SetStatusCode(code int)    { r.HTTPStatusCode = code }
+func (r *TodoResponse) SetStatusCode(code int) error {
+	r.HTTPStatusCode = code
+	return nil
+}
 
 //---------------------------------------------
 
@@ -47,13 +52,18 @@ func (r *deletePostRequest) Path() (string, error) { return "/posts/" + fmt.Spri
 
 func (r *deletePostRequest) Encode() (io.Reader, error) { return nil, nil }
 func (r *deletePostRequest) ContentType() string        { return "" }
-func (r *DeletePostResponse) Decode(body io.ReadCloser) error {
-	defer body.Close()
+func (r *DeletePostResponse) Decode(body io.Reader) error {
+
 	return nil
 }
-func (r *DeletePostResponse) SetBody(body io.Reader)    {}
+func (r *DeletePostResponse) SetBody(body io.Reader) error {
+	return nil
+}
 func (r *DeletePostResponse) AcceptContentType() string { return "" }
-func (r *DeletePostResponse) SetStatusCode(code int)    { r.HTTPStatusCode = code }
+func (r *DeletePostResponse) SetStatusCode(code int) error {
+	r.HTTPStatusCode = code
+	return nil
+}
 
 // ---------------------------------------------
 
@@ -82,13 +92,18 @@ func (r *updatePostRequest) Encode() (io.Reader, error) {
 	return bytes.NewReader(jsonBytes), nil
 }
 func (r *updatePostRequest) ContentType() string { return "application/json; charset=UTF-8" }
-func (r *UpdatePostResponse) Decode(body io.ReadCloser) error {
-	defer body.Close()
+func (r *UpdatePostResponse) Decode(body io.Reader) error {
+
 	return json.NewDecoder(body).Decode(r)
 }
-func (r *UpdatePostResponse) SetBody(body io.Reader)    {}
+func (r *UpdatePostResponse) SetBody(body io.Reader) error {
+	return nil
+}
 func (r *UpdatePostResponse) AcceptContentType() string { return "application/json" }
-func (r *UpdatePostResponse) SetStatusCode(code int)    { r.HTTPStatusCode = code }
+func (r *UpdatePostResponse) SetStatusCode(code int) error {
+	r.HTTPStatusCode = code
+	return nil
+}
 
 // ---------------------------------------------
 
@@ -118,13 +133,18 @@ func (r *createPostRequest) Encode() (io.Reader, error) {
 	return bytes.NewReader(jsonBytes), nil
 }
 func (r *createPostRequest) ContentType() string { return "application/json" }
-func (r *CreatePostResponse) Decode(body io.ReadCloser) error {
-	defer body.Close()
+func (r *CreatePostResponse) Decode(body io.Reader) error {
+
 	return json.NewDecoder(body).Decode(r)
 }
-func (r *CreatePostResponse) SetBody(body io.Reader)    {}
+func (r *CreatePostResponse) SetBody(body io.Reader) error {
+	return nil
+}
 func (r *CreatePostResponse) AcceptContentType() string { return "application/json" }
-func (r *CreatePostResponse) SetStatusCode(code int)    { r.HTTPStatusCode = code }
+func (r *CreatePostResponse) SetStatusCode(code int) error {
+	r.HTTPStatusCode = code
+	return nil
+}
 
 // ---------------------------------------------
 
