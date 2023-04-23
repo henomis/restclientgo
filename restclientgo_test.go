@@ -525,3 +525,88 @@ func TestRestClient_Put(t *testing.T) {
 		})
 	}
 }
+
+func TestRestClient_SetEndpoint(t *testing.T) {
+	type fields struct {
+		httpClient      *http.Client
+		endpoint        string
+		requestModifier func(*http.Request) *http.Request
+	}
+	type args struct {
+		endpoint string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   string
+	}{
+		{
+			name: "test set endpoint",
+			fields: fields{
+				httpClient: http.DefaultClient,
+				endpoint:   "https://example.com",
+				requestModifier: func(req *http.Request) *http.Request {
+					req.Header.Set("Accept", "application/json")
+					return req
+				},
+			},
+			args: args{
+				endpoint: "https://another.com",
+			},
+			want: "https://another.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &RestClient{
+				httpClient:      tt.fields.httpClient,
+				endpoint:        tt.fields.endpoint,
+				requestModifier: tt.fields.requestModifier,
+			}
+			r.SetEndpoint(tt.args.endpoint)
+
+			if tt.want != r.endpoint {
+				t.Errorf("RestClient.Get() = %s, want %s", tt.want, r.endpoint)
+			}
+		})
+	}
+}
+
+func TestRestClient_Endpoint(t *testing.T) {
+	type fields struct {
+		httpClient      *http.Client
+		endpoint        string
+		requestModifier func(*http.Request) *http.Request
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		{
+			name: "test get endpoint",
+			fields: fields{
+				httpClient: http.DefaultClient,
+				endpoint:   "https://example.com",
+				requestModifier: func(req *http.Request) *http.Request {
+					req.Header.Set("Accept", "application/json")
+					return req
+				},
+			},
+			want: "https://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &RestClient{
+				httpClient:      tt.fields.httpClient,
+				endpoint:        tt.fields.endpoint,
+				requestModifier: tt.fields.requestModifier,
+			}
+			if got := r.Endpoint(); got != tt.want {
+				t.Errorf("RestClient.Endpoint() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
