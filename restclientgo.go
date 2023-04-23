@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"strings"
-	"time"
 )
 
 type RestClient struct {
@@ -59,17 +58,11 @@ type Response interface {
 	SetStatusCode(code int) error
 }
 
-const (
-	defaultHTTPClientTimeout = (10 * time.Second)
-)
-
 // New creates a new RestClient.
 func New(endpoint string) *RestClient {
 	return &RestClient{
-		endpoint: endpoint,
-		httpClient: &http.Client{
-			Timeout: defaultHTTPClientTimeout,
-		},
+		endpoint:   endpoint,
+		httpClient: &http.Client{},
 	}
 }
 
@@ -81,6 +74,10 @@ func (r *RestClient) SetHTTPClient(client *http.Client) {
 // SetRequestModifier adds a function that will modify each request
 func (r *RestClient) SetRequestModifier(requestModifier func(*http.Request) *http.Request) {
 	r.requestModifier = requestModifier
+}
+
+func (r *RestClient) SetEndpoint(endpoint string) {
+	r.endpoint = endpoint
 }
 
 // Get performs a GET request.
