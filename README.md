@@ -57,7 +57,7 @@ func (r *MyResponse) SetBody(body io.Reader) error {
     // Set the response body if needed
 }
 
-func (r *MyResponse) StatusCode(int code) error {
+func (r *MyResponse) SetStatusCode(code int) error {
     // Handler to set the HTTP status code of the response
 }
 
