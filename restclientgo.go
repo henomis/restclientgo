@@ -80,6 +80,10 @@ func (r *RestClient) SetEndpoint(endpoint string) {
 	r.endpoint = endpoint
 }
 
+func (r *RestClient) Endpoint() string {
+	return r.endpoint
+}
+
 // Get performs a GET request.
 func (r *RestClient) Get(ctx context.Context, request Request, response Response) error {
 	return r.do(ctx, methodGet, request, response)
