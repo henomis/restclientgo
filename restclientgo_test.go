@@ -36,6 +36,7 @@ func (r *TodoResponse) SetStatusCode(code int) error {
 	r.HTTPStatusCode = code
 	return nil
 }
+func (r *TodoResponse) SetHeaders(headers map[string]string) {}
 
 //---------------------------------------------
 
@@ -64,6 +65,7 @@ func (r *DeletePostResponse) SetStatusCode(code int) error {
 	r.HTTPStatusCode = code
 	return nil
 }
+func (r *DeletePostResponse) SetHeaders(headers map[string]string) {}
 
 // ---------------------------------------------
 
@@ -104,6 +106,7 @@ func (r *UpdatePostResponse) SetStatusCode(code int) error {
 	r.HTTPStatusCode = code
 	return nil
 }
+func (r *UpdatePostResponse) SetHeaders(headers map[string]string) {}
 
 // ---------------------------------------------
 
@@ -145,6 +148,7 @@ func (r *CreatePostResponse) SetStatusCode(code int) error {
 	r.HTTPStatusCode = code
 	return nil
 }
+func (r *CreatePostResponse) SetHeaders(headers map[string]string) {}
 
 // ---------------------------------------------
 

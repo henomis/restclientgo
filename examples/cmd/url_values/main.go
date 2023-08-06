@@ -60,6 +60,8 @@ func (r *CommentsResponse) SetStatusCode(code int) error {
 	return nil
 }
 
+func (r *CommentsResponse) SetHeaders(headers map[string]string) {}
+
 func main() {
 
 	restClient := restclientgo.New("https://jsonplaceholder.typicode.com")
