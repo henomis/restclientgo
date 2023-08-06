@@ -55,6 +55,8 @@ func (r *TodoResponse) SetStatusCode(code int) error {
 	return nil
 }
 
+func (r *TodoResponse) SetHeaders(headers map[string]string) error { return nil }
+
 func main() {
 
 	restClient := restclientgo.New("https://jsonplaceholder.typicode.com")

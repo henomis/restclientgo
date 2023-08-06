@@ -49,6 +49,8 @@ func (r *DeletePostResponse) SetStatusCode(code int) error {
 	return nil
 }
 
+func (r *DeletePostResponse) SetHeaders(headers map[string]string) error { return nil }
+
 func main() {
 
 	restClient := restclientgo.New("https://jsonplaceholder.typicode.com")
