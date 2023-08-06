@@ -62,7 +62,7 @@ func (r *UpdatePostResponse) SetStatusCode(code int) error {
 	return nil
 }
 
-func (r *UpdatePostResponse) SetHeaders(headers map[string]string) {}
+func (r *UpdatePostResponse) SetHeaders(headers map[string]string) error { return nil }
 
 func main() {
 

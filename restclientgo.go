@@ -57,7 +57,7 @@ type Response interface {
 	// SetStatusCode sets the HTTP response status code.
 	SetStatusCode(code int) error
 	// SetHeaders sets the HTTP response headers.
-	SetHeaders(headers map[string]string)
+	SetHeaders(headers map[string]string) error
 }
 
 // New creates a new RestClient.
@@ -150,9 +150,14 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 		return nil
 	}
 
-	var headers map[string]string
+	headers := make(map[string]string)
 	for k, v := range httpResponse.Header {
 		headers[k] = strings.Join(v, ",")
+	}
+
+	err = response.SetHeaders(headers)
+	if err != nil {
+		return err
 	}
 
 	if response.AcceptContentType() == "" {
