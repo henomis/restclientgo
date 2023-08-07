@@ -60,7 +60,7 @@ func (r *CommentsResponse) SetStatusCode(code int) error {
 	return nil
 }
 
-func (r *CommentsResponse) SetHeaders(headers map[string]string) error { return nil }
+func (r *CommentsResponse) SetHeaders(headers restclientgo.Headers) error { return nil }
 
 func main() {
 

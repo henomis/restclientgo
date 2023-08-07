@@ -61,7 +61,7 @@ func (r *CreatePostResponse) SetStatusCode(code int) error {
 	return nil
 }
 
-func (r *CreatePostResponse) SetHeaders(headers map[string]string) error { return nil }
+func (r *CreatePostResponse) SetHeaders(headers restclientgo.Headers) error { return nil }
 
 func main() {
 

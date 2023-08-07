@@ -38,6 +38,8 @@ const (
 	methodPatch  httpMethod = "PATCH"
 )
 
+type Headers map[string][]string
+
 type Request interface {
 	// Path returns the path of the request including the query string if any.
 	Path() (string, error)
@@ -57,7 +59,7 @@ type Response interface {
 	// SetStatusCode sets the HTTP response status code.
 	SetStatusCode(code int) error
 	// SetHeaders sets the HTTP response headers.
-	SetHeaders(headers map[string]string) error
+	SetHeaders(headers Headers) error
 }
 
 // New creates a new RestClient.
@@ -144,20 +146,20 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 	}
 	defer httpResponse.Body.Close()
 
-	response.SetStatusCode(httpResponse.StatusCode)
-	if httpResponse.StatusCode >= 400 {
-		response.SetBody(httpResponse.Body)
-		return nil
-	}
-
-	headers := make(map[string]string)
+	var headers = make(Headers)
 	for k, v := range httpResponse.Header {
-		headers[k] = strings.Join(v, ",")
+		headers[k] = v
 	}
 
 	err = response.SetHeaders(headers)
 	if err != nil {
 		return err
+	}
+
+	response.SetStatusCode(httpResponse.StatusCode)
+	if httpResponse.StatusCode >= 400 {
+		response.SetBody(httpResponse.Body)
+		return nil
 	}
 
 	if response.AcceptContentType() == "" {
