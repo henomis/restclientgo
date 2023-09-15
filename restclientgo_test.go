@@ -25,10 +25,10 @@ func (r *todoRequest) Path() (string, error)      { return "/todos/" + r.ID, nil
 func (r *todoRequest) Encode() (io.Reader, error) { return nil, nil }
 func (r *todoRequest) ContentType() string        { return "" }
 func (r *TodoResponse) Decode(body io.Reader) error {
-
 	return json.NewDecoder(body).Decode(r)
 }
 func (r *TodoResponse) SetBody(body io.Reader) error {
+	_ = body
 	return nil
 }
 func (r *TodoResponse) AcceptContentType() string { return "application/json" }
@@ -36,7 +36,10 @@ func (r *TodoResponse) SetStatusCode(code int) error {
 	r.HTTPStatusCode = code
 	return nil
 }
-func (r *TodoResponse) SetHeaders(headers Headers) error { return nil }
+func (r *TodoResponse) SetHeaders(headers Headers) error {
+	_ = headers
+	return nil
+}
 
 //---------------------------------------------
 
@@ -54,10 +57,11 @@ func (r *deletePostRequest) Path() (string, error) { return "/posts/" + fmt.Spri
 func (r *deletePostRequest) Encode() (io.Reader, error) { return nil, nil }
 func (r *deletePostRequest) ContentType() string        { return "" }
 func (r *DeletePostResponse) Decode(body io.Reader) error {
-
+	_ = body
 	return nil
 }
 func (r *DeletePostResponse) SetBody(body io.Reader) error {
+	_ = body
 	return nil
 }
 func (r *DeletePostResponse) AcceptContentType() string { return "" }
@@ -65,7 +69,10 @@ func (r *DeletePostResponse) SetStatusCode(code int) error {
 	r.HTTPStatusCode = code
 	return nil
 }
-func (r *DeletePostResponse) SetHeaders(headers Headers) error { return nil }
+func (r *DeletePostResponse) SetHeaders(headers Headers) error {
+	_ = headers
+	return nil
+}
 
 // ---------------------------------------------
 
@@ -95,10 +102,10 @@ func (r *updatePostRequest) Encode() (io.Reader, error) {
 }
 func (r *updatePostRequest) ContentType() string { return "application/json; charset=UTF-8" }
 func (r *UpdatePostResponse) Decode(body io.Reader) error {
-
 	return json.NewDecoder(body).Decode(r)
 }
 func (r *UpdatePostResponse) SetBody(body io.Reader) error {
+	_ = body
 	return nil
 }
 func (r *UpdatePostResponse) AcceptContentType() string { return "application/json" }
@@ -106,7 +113,10 @@ func (r *UpdatePostResponse) SetStatusCode(code int) error {
 	r.HTTPStatusCode = code
 	return nil
 }
-func (r *UpdatePostResponse) SetHeaders(headers Headers) error { return nil }
+func (r *UpdatePostResponse) SetHeaders(headers Headers) error {
+	_ = headers
+	return nil
+}
 
 // ---------------------------------------------
 
@@ -137,10 +147,10 @@ func (r *createPostRequest) Encode() (io.Reader, error) {
 }
 func (r *createPostRequest) ContentType() string { return "application/json" }
 func (r *CreatePostResponse) Decode(body io.Reader) error {
-
 	return json.NewDecoder(body).Decode(r)
 }
 func (r *CreatePostResponse) SetBody(body io.Reader) error {
+	_ = body
 	return nil
 }
 func (r *CreatePostResponse) AcceptContentType() string { return "application/json" }
@@ -148,7 +158,10 @@ func (r *CreatePostResponse) SetStatusCode(code int) error {
 	r.HTTPStatusCode = code
 	return nil
 }
-func (r *CreatePostResponse) SetHeaders(headers Headers) error { return nil }
+func (r *CreatePostResponse) SetHeaders(headers Headers) error {
+	_ = headers
+	return nil
+}
 
 // ---------------------------------------------
 
@@ -232,8 +245,14 @@ func TestRestClient_Get(t *testing.T) {
 				t.Errorf("RestClient.Get() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			response := tt.args.response.(*TodoResponse)
-			wantResponse := tt.wantResponse.(*TodoResponse)
+			response, ok := tt.args.response.(*TodoResponse)
+			if !ok {
+				t.Errorf("Cannot cast response to TodoResponse")
+			}
+			wantResponse, ok := tt.wantResponse.(*TodoResponse)
+			if !ok {
+				t.Errorf("Cannot cast response to TodoResponse")
+			}
 
 			jsonReponse, err := json.Marshal(*response)
 			if err != nil {
@@ -355,8 +374,14 @@ func TestRestClient_Patch(t *testing.T) {
 				t.Errorf("RestClient.Patch() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			response := tt.args.response.(*UpdatePostResponse)
-			wantResponse := tt.wantResponse.(*UpdatePostResponse)
+			response, ok := tt.args.response.(*UpdatePostResponse)
+			if !ok {
+				t.Errorf("Cannot cast response to UpdatePostResponse")
+			}
+			wantResponse, ok := tt.wantResponse.(*UpdatePostResponse)
+			if !ok {
+				t.Errorf("Cannot cast wantResponse to UpdatePostResponse")
+			}
 
 			jsonReponse, err := json.Marshal(*response)
 			if err != nil {
@@ -432,8 +457,14 @@ func TestRestClient_Post(t *testing.T) {
 				t.Errorf("RestClient.Post() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			response := tt.args.response.(*CreatePostResponse)
-			wantResponse := tt.wantResponse.(*CreatePostResponse)
+			response, ok := tt.args.response.(*CreatePostResponse)
+			if !ok {
+				t.Errorf("Cannot cast response to CreatePostResponse")
+			}
+			wantResponse, ok := tt.wantResponse.(*CreatePostResponse)
+			if !ok {
+				t.Errorf("Cannot cast wantResponse to CreatePostResponse")
+			}
 
 			jsonReponse, err := json.Marshal(*response)
 			if err != nil {
@@ -510,8 +541,14 @@ func TestRestClient_Put(t *testing.T) {
 				t.Errorf("RestClient.Put() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			response := tt.args.response.(*UpdatePostResponse)
-			wantResponse := tt.wantResponse.(*UpdatePostResponse)
+			response, ok := tt.args.response.(*UpdatePostResponse)
+			if !ok {
+				t.Errorf("Cannot cast response to UpdatePostResponse")
+			}
+			wantResponse, ok := tt.wantResponse.(*UpdatePostResponse)
+			if !ok {
+				t.Errorf("Cannot cast wantResponse to UpdatePostResponse")
+			}
 
 			jsonReponse, err := json.Marshal(*response)
 			if err != nil {

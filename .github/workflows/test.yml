@@ -17,3 +17,15 @@ jobs:
       run: go get -v -t -d ./...
     - name: Run tests
       run: go test ./...
+     golangci:
+  golanci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.19'
+          cache: false
+      - uses: actions/checkout@v3
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
