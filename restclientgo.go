@@ -116,18 +116,18 @@ func (r *RestClient) Patch(ctx context.Context, request Request, response Respon
 func (r *RestClient) do(ctx context.Context, method httpMethod, request Request, response Response) error {
 	requestPath, err := request.Path()
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrRequestPath, err)
+		return fmt.Errorf("%w: %w", ErrRequestPath, err)
 	}
 
 	requestEncodedBody, err := request.Encode()
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrRequestEncode, err)
+		return fmt.Errorf("%w: %w", ErrRequestEncode, err)
 	}
 
 	requestURL := r.endpoint + requestPath
 	httpRequest, err := http.NewRequest(string(method), requestURL, requestEncodedBody)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrHTTPRequest, err)
+		return fmt.Errorf("%w: %w", ErrHTTPRequest, err)
 	}
 
 	if request.ContentType() != "" {
@@ -142,7 +142,7 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 
 	httpResponse, err := r.httpClient.Do(httpRequest)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrHTTPRequest, err)
+		return fmt.Errorf("%w: %w", ErrHTTPRequest, err)
 	}
 	defer httpResponse.Body.Close()
 
@@ -156,14 +156,24 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 		return err
 	}
 
-	response.SetStatusCode(httpResponse.StatusCode)
+	err = response.SetStatusCode(httpResponse.StatusCode)
+	if err != nil {
+		return err
+	}
+
 	if httpResponse.StatusCode >= 400 {
-		response.SetBody(httpResponse.Body)
+		err = response.SetBody(httpResponse.Body)
+		if err != nil {
+			return err
+		}
 		return nil
 	}
 
 	if response.AcceptContentType() == "" {
-		response.SetBody(httpResponse.Body)
+		err = response.SetBody(httpResponse.Body)
+		if err != nil {
+			return err
+		}
 		return nil
 	}
 
@@ -174,14 +184,13 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 
 	err = response.Decode(httpResponse.Body)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrResponseDecode, err)
+		return fmt.Errorf("%w: %w", ErrResponseDecode, err)
 	}
 
 	return nil
 }
 
 func (r *RestClient) matchContentType(httpResponse *http.Response, response Response) error {
-
 	contentTypeToMatch := response.AcceptContentType()
 	contentType := httpResponse.Header.Get("Content-Type")
 
