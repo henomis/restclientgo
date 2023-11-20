@@ -9,9 +9,10 @@ import (
 )
 
 type RestClient struct {
-	httpClient      *http.Client
-	endpoint        string
-	requestModifier func(*http.Request) *http.Request
+	httpClient         *http.Client
+	endpoint           string
+	requestModifier    func(*http.Request) *http.Request
+	forceDecodeOnError bool
 }
 
 type Error string
@@ -78,6 +79,24 @@ func (r *RestClient) SetHTTPClient(client *http.Client) {
 // SetRequestModifier adds a function that will modify each request
 func (r *RestClient) SetRequestModifier(requestModifier func(*http.Request) *http.Request) {
 	r.requestModifier = requestModifier
+}
+
+// WithRequestModifier adds a function that will modify each request
+func (r *RestClient) WithRequestModifier(requestModifier func(*http.Request) *http.Request) *RestClient {
+	r.requestModifier = requestModifier
+	return r
+}
+
+// WithHTTPClient overrides the default http client.
+func (r *RestClient) WithHTTPClient(client *http.Client) *RestClient {
+	r.httpClient = client
+	return r
+}
+
+// WithDecodeOnError forces the response to be decoded even if the status code is >= 400.
+func (r *RestClient) WithDecodeOnError(decodeOnError bool) *RestClient {
+	r.forceDecodeOnError = decodeOnError
+	return r
 }
 
 func (r *RestClient) SetEndpoint(endpoint string) {
@@ -161,7 +180,7 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 		return err
 	}
 
-	if httpResponse.StatusCode >= 400 {
+	if httpResponse.StatusCode >= 400 && !r.forceDecodeOnError {
 		err = response.SetBody(httpResponse.Body)
 		if err != nil {
 			return err
