@@ -9,10 +9,11 @@ import (
 )
 
 type RestClient struct {
-	httpClient         *http.Client
-	endpoint           string
-	requestModifier    func(*http.Request) *http.Request
-	forceDecodeOnError bool
+	httpClient             *http.Client
+	endpoint               string
+	requestModifier        func(*http.Request) *http.Request
+	forceDecodeOnError     bool
+	forceErrorOnStatusCode bool
 }
 
 type Error string
@@ -99,6 +100,12 @@ func (r *RestClient) WithDecodeOnError(decodeOnError bool) *RestClient {
 	return r
 }
 
+// WithErrorOnStatusCode forces the response to return an error if the status code is >= 400.
+func (r *RestClient) WithErrorOnStatusCode(errorOnStatusCode bool) *RestClient {
+	r.forceErrorOnStatusCode = errorOnStatusCode
+	return r
+}
+
 func (r *RestClient) SetEndpoint(endpoint string) {
 	r.endpoint = endpoint
 }
@@ -180,15 +187,7 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 		return err
 	}
 
-	if httpResponse.StatusCode >= 400 && !r.forceDecodeOnError {
-		err = response.SetBody(httpResponse.Body)
-		if err != nil {
-			return err
-		}
-		return nil
-	}
-
-	if response.AcceptContentType() == "" {
+	if (httpResponse.StatusCode >= 400 && !r.forceDecodeOnError) || response.AcceptContentType() == "" {
 		err = response.SetBody(httpResponse.Body)
 		if err != nil {
 			return err
@@ -204,6 +203,10 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 	err = response.Decode(httpResponse.Body)
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrResponseDecode, err)
+	}
+
+	if httpResponse.StatusCode >= 400 && r.forceErrorOnStatusCode {
+		return fmt.Errorf("http status code %d", httpResponse.StatusCode)
 	}
 
 	return nil
