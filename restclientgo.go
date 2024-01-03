@@ -1,6 +1,7 @@
 package restclientgo
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"io"
@@ -8,11 +9,16 @@ import (
 	"strings"
 )
 
+const maxStreamBufferSize = 512 * 1024
+
+type StreamDecodeFn func([]byte) error
+
 type RestClient struct {
 	httpClient         *http.Client
 	endpoint           string
 	requestModifier    func(*http.Request) *http.Request
 	forceDecodeOnError bool
+	streamDecodeFn     StreamDecodeFn
 }
 
 type Error string
@@ -96,6 +102,11 @@ func (r *RestClient) WithHTTPClient(client *http.Client) *RestClient {
 // WithDecodeOnError forces the response to be decoded even if the status code is >= 400.
 func (r *RestClient) WithDecodeOnError(decodeOnError bool) *RestClient {
 	r.forceDecodeOnError = decodeOnError
+	return r
+}
+
+func (r *RestClient) WithStream(streamDecodeFn StreamDecodeFn) *RestClient {
+	r.streamDecodeFn = streamDecodeFn
 	return r
 }
 
@@ -201,9 +212,29 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 		return err
 	}
 
-	err = response.Decode(httpResponse.Body)
+	if r.streamDecodeFn == nil {
+		err = response.Decode(httpResponse.Body)
+	} else {
+		err = r.decodeBody(httpResponse.Body)
+	}
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrResponseDecode, err)
+	}
+
+	return nil
+}
+
+func (r *RestClient) decodeBody(body io.Reader) error {
+	scanner := bufio.NewScanner(body)
+
+	scanBuf := make([]byte, 0, maxStreamBufferSize)
+	scanner.Buffer(scanBuf, maxStreamBufferSize)
+
+	for scanner.Scan() {
+		err := r.streamDecodeFn(scanner.Bytes())
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
