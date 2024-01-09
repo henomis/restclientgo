@@ -65,7 +65,9 @@ func (r *CreatePostResponse) SetHeaders(headers restclientgo.Headers) error { re
 func main() {
 
 	var response string
-	restClient := restclientgo.New("http://localhost:11434/api").WithStream(
+	restClient := restclientgo.New("http://localhost:11434/api")
+
+	restClient.SetStreamCallback(
 		func(data []byte) error {
 			var createPostResponse CreatePostResponse
 
