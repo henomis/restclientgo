@@ -11,14 +11,14 @@ import (
 
 const maxStreamBufferSize = 512 * 1024
 
-type StreamDecodeFn func([]byte) error
+type StreamCallback func([]byte) error
 
 type RestClient struct {
 	httpClient         *http.Client
 	endpoint           string
 	requestModifier    func(*http.Request) *http.Request
 	forceDecodeOnError bool
-	streamDecodeFn     StreamDecodeFn
+	streamCallback     StreamCallback
 }
 
 type Error string
@@ -105,9 +105,8 @@ func (r *RestClient) WithDecodeOnError(decodeOnError bool) *RestClient {
 	return r
 }
 
-func (r *RestClient) WithStream(streamDecodeFn StreamDecodeFn) *RestClient {
-	r.streamDecodeFn = streamDecodeFn
-	return r
+func (r *RestClient) SetStreamCallback(streamCallback StreamCallback) {
+	r.streamCallback = streamCallback
 }
 
 func (r *RestClient) SetEndpoint(endpoint string) {
@@ -212,7 +211,7 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 		return err
 	}
 
-	if r.streamDecodeFn == nil {
+	if r.streamCallback == nil {
 		err = response.Decode(httpResponse.Body)
 	} else {
 		err = r.decodeBody(httpResponse.Body)
@@ -231,7 +230,7 @@ func (r *RestClient) decodeBody(body io.Reader) error {
 	scanner.Buffer(scanBuf, maxStreamBufferSize)
 
 	for scanner.Scan() {
-		err := r.streamDecodeFn(scanner.Bytes())
+		err := r.streamCallback(scanner.Bytes())
 		if err != nil {
 			return err
 		}
