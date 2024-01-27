@@ -211,7 +211,7 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 		return err
 	}
 
-	if streamable, isStreamable := response.(Streamable); isStreamable {
+	if streamable, isStreamable := response.(Streamable); isStreamable && streamable.StreamCallback() != nil {
 		err = stream(streamable.StreamCallback(), httpResponse.Body)
 	} else {
 		err = response.Decode(httpResponse.Body)
