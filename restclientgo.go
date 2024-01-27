@@ -66,6 +66,10 @@ type Response interface {
 	SetStatusCode(code int) error
 	// SetHeaders sets the HTTP response headers.
 	SetHeaders(headers Headers) error
+}
+
+type Streamable interface {
+	Response
 	// StreamCallback get the stream callback if any.
 	StreamCallback() StreamCallback
 }
@@ -208,8 +212,8 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 		return err
 	}
 
-	if streamCallback := response.StreamCallback(); streamCallback != nil {
-		err = r.decodeBody(streamCallback, httpResponse.Body)
+	if responseStreamable, ok := response.(Streamable); ok {
+		return r.decodeBody(responseStreamable.StreamCallback(), httpResponse.Body)
 	} else {
 		err = response.Decode(httpResponse.Body)
 	}

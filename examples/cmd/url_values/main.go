@@ -61,7 +61,6 @@ func (r *CommentsResponse) SetStatusCode(code int) error {
 }
 
 func (r *CommentsResponse) SetHeaders(headers restclientgo.Headers) error { return nil }
-func (r *CommentsResponse) StreamCallback() restclientgo.StreamCallback   { return nil }
 
 func main() {
 
