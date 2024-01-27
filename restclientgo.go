@@ -142,6 +142,7 @@ func (r *RestClient) Patch(ctx context.Context, request Request, response Respon
 	return r.do(ctx, methodPatch, request, response)
 }
 
+//nolint:gocognit
 func (r *RestClient) do(ctx context.Context, method httpMethod, request Request, response Response) error {
 	requestPath, err := request.Path()
 	if err != nil {
