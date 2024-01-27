@@ -18,7 +18,6 @@ type RestClient struct {
 	endpoint           string
 	requestModifier    func(*http.Request) *http.Request
 	forceDecodeOnError bool
-	streamCallback     StreamCallback
 }
 
 type Error string
@@ -69,6 +68,11 @@ type Response interface {
 	SetHeaders(headers Headers) error
 }
 
+type Streamable interface {
+	// StreamCallback get the stream callback if any.
+	StreamCallback() StreamCallback
+}
+
 // New creates a new RestClient.
 func New(endpoint string) *RestClient {
 	return &RestClient{
@@ -105,10 +109,6 @@ func (r *RestClient) WithDecodeOnError(decodeOnError bool) *RestClient {
 	return r
 }
 
-func (r *RestClient) SetStreamCallback(streamCallback StreamCallback) {
-	r.streamCallback = streamCallback
-}
-
 func (r *RestClient) SetEndpoint(endpoint string) {
 	r.endpoint = endpoint
 }
@@ -142,6 +142,7 @@ func (r *RestClient) Patch(ctx context.Context, request Request, response Respon
 	return r.do(ctx, methodPatch, request, response)
 }
 
+//nolint:gocognit
 func (r *RestClient) do(ctx context.Context, method httpMethod, request Request, response Response) error {
 	requestPath, err := request.Path()
 	if err != nil {
@@ -206,16 +207,17 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 		return nil
 	}
 
-	err = r.matchContentType(httpResponse, response)
+	err = matchContentType(httpResponse, response)
 	if err != nil {
 		return err
 	}
 
-	if r.streamCallback == nil {
-		err = response.Decode(httpResponse.Body)
+	if streamable, isStreamable := response.(Streamable); isStreamable && streamable.StreamCallback() != nil {
+		err = stream(streamable.StreamCallback(), httpResponse.Body)
 	} else {
-		err = r.decodeBody(httpResponse.Body)
+		err = response.Decode(httpResponse.Body)
 	}
+
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrResponseDecode, err)
 	}
@@ -223,23 +225,7 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 	return nil
 }
 
-func (r *RestClient) decodeBody(body io.Reader) error {
-	scanner := bufio.NewScanner(body)
-
-	scanBuf := make([]byte, 0, maxStreamBufferSize)
-	scanner.Buffer(scanBuf, maxStreamBufferSize)
-
-	for scanner.Scan() {
-		err := r.streamCallback(scanner.Bytes())
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (r *RestClient) matchContentType(httpResponse *http.Response, response Response) error {
+func matchContentType(httpResponse *http.Response, response Response) error {
 	contentTypeToMatch := response.AcceptContentType()
 	contentType := httpResponse.Header.Get("Content-Type")
 
@@ -254,4 +240,20 @@ func (r *RestClient) matchContentType(httpResponse *http.Response, response Resp
 	}
 
 	return ErrNoContentType
+}
+
+func stream(streamCallback StreamCallback, body io.Reader) error {
+	scanner := bufio.NewScanner(body)
+
+	scanBuf := make([]byte, 0, maxStreamBufferSize)
+	scanner.Buffer(scanBuf, maxStreamBufferSize)
+
+	for scanner.Scan() {
+		err := streamCallback(scanner.Bytes())
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
