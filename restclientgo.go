@@ -206,7 +206,7 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 		return nil
 	}
 
-	err = r.matchContentType(httpResponse, response)
+	err = matchContentType(httpResponse, response)
 	if err != nil {
 		return err
 	}
@@ -224,7 +224,7 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 	return nil
 }
 
-func (r *RestClient) matchContentType(httpResponse *http.Response, response Response) error {
+func matchContentType(httpResponse *http.Response, response Response) error {
 	contentTypeToMatch := response.AcceptContentType()
 	contentType := httpResponse.Header.Get("Content-Type")
 
