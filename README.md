@@ -64,6 +64,10 @@ func (r *MyResponse) SetStatusCode(code int) error {
 func (r *MyResponse) AcceptContentType() string {
     // Return the accepted content type of the response
 }
+
+func (r *MyResponse) StreamCallback() StreamCallback {
+    // Return the stream callback if any.
+}
 ```
 
 ## Usage

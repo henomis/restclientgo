@@ -63,6 +63,7 @@ func (r *UpdatePostResponse) SetStatusCode(code int) error {
 }
 
 func (r *UpdatePostResponse) SetHeaders(headers restclientgo.Headers) error { return nil }
+func (r *UpdatePostResponse) StreamCallback() restclientgo.StreamCallback   { return nil }
 
 func main() {
 

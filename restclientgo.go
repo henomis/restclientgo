@@ -18,7 +18,6 @@ type RestClient struct {
 	endpoint           string
 	requestModifier    func(*http.Request) *http.Request
 	forceDecodeOnError bool
-	streamCallback     StreamCallback
 }
 
 type Error string
@@ -67,6 +66,8 @@ type Response interface {
 	SetStatusCode(code int) error
 	// SetHeaders sets the HTTP response headers.
 	SetHeaders(headers Headers) error
+	// StreamCallback get the stream callback if any.
+	StreamCallback() StreamCallback
 }
 
 // New creates a new RestClient.
@@ -103,10 +104,6 @@ func (r *RestClient) WithHTTPClient(client *http.Client) *RestClient {
 func (r *RestClient) WithDecodeOnError(decodeOnError bool) *RestClient {
 	r.forceDecodeOnError = decodeOnError
 	return r
-}
-
-func (r *RestClient) SetStreamCallback(streamCallback StreamCallback) {
-	r.streamCallback = streamCallback
 }
 
 func (r *RestClient) SetEndpoint(endpoint string) {
@@ -211,11 +208,12 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 		return err
 	}
 
-	if r.streamCallback == nil {
-		err = response.Decode(httpResponse.Body)
+	if streamCallback := response.StreamCallback(); streamCallback != nil {
+		err = r.decodeBody(streamCallback, httpResponse.Body)
 	} else {
-		err = r.decodeBody(httpResponse.Body)
+		err = response.Decode(httpResponse.Body)
 	}
+
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrResponseDecode, err)
 	}
@@ -223,14 +221,14 @@ func (r *RestClient) do(ctx context.Context, method httpMethod, request Request,
 	return nil
 }
 
-func (r *RestClient) decodeBody(body io.Reader) error {
+func (r *RestClient) decodeBody(streamCallback StreamCallback, body io.Reader) error {
 	scanner := bufio.NewScanner(body)
 
 	scanBuf := make([]byte, 0, maxStreamBufferSize)
 	scanner.Buffer(scanBuf, maxStreamBufferSize)
 
 	for scanner.Scan() {
-		err := r.streamCallback(scanner.Bytes())
+		err := streamCallback(scanner.Bytes())
 		if err != nil {
 			return err
 		}

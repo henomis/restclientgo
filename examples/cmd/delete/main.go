@@ -50,6 +50,7 @@ func (r *DeletePostResponse) SetStatusCode(code int) error {
 }
 
 func (r *DeletePostResponse) SetHeaders(headers restclientgo.Headers) error { return nil }
+func (r *DeletePostResponse) StreamCallback() restclientgo.StreamCallback   { return nil }
 
 func main() {
 

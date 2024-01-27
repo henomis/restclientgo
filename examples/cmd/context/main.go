@@ -56,6 +56,7 @@ func (r *TodoResponse) SetStatusCode(code int) error {
 }
 
 func (r *TodoResponse) SetHeaders(headers restclientgo.Headers) error { return nil }
+func (r *TodoResponse) StreamCallback() restclientgo.StreamCallback   { return nil }
 
 func main() {
 

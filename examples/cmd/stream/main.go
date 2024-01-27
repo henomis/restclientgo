@@ -35,11 +35,12 @@ func (r *createPostRequest) ContentType() string {
 }
 
 type CreatePostResponse struct {
-	HTTPStatusCode int    `json:"-"`
-	Model          string `json:"model"`
-	CreatedAt      string `json:"created_at"`
-	Response       string `json:"response"`
-	Done           bool   `json:"done"`
+	HTTPStatusCode   int                         `json:"-"`
+	Model            string                      `json:"model"`
+	CreatedAt        string                      `json:"created_at"`
+	Response         string                      `json:"response"`
+	Done             bool                        `json:"done"`
+	StreamCallbackFn restclientgo.StreamCallback `json:"-"`
 }
 
 func (r *CreatePostResponse) Decode(body io.Reader) error {
@@ -61,27 +62,14 @@ func (r *CreatePostResponse) SetStatusCode(code int) error {
 }
 
 func (r *CreatePostResponse) SetHeaders(headers restclientgo.Headers) error { return nil }
+func (r *CreatePostResponse) StreamCallback() restclientgo.StreamCallback {
+	return r.StreamCallbackFn
+}
 
 func main() {
 
 	var response string
 	restClient := restclientgo.New("http://localhost:11434/api")
-
-	restClient.SetStreamCallback(
-		func(data []byte) error {
-			var createPostResponse CreatePostResponse
-
-			err := json.Unmarshal(data, &createPostResponse)
-			if err != nil {
-				return err
-			}
-
-			response += createPostResponse.Response
-			fmt.Printf(createPostResponse.Response)
-
-			return nil
-		},
-	)
 
 	restClient.SetRequestModifier(func(req *http.Request) *http.Request {
 		req.Header.Set("Accept", "application/json")
@@ -89,6 +77,19 @@ func main() {
 	})
 
 	var createPostResponse CreatePostResponse
+	createPostResponse.StreamCallbackFn = func(data []byte) error {
+		var createPostResponse CreatePostResponse
+
+		err := json.Unmarshal(data, &createPostResponse)
+		if err != nil {
+			return err
+		}
+
+		response += createPostResponse.Response
+		fmt.Printf(createPostResponse.Response)
+
+		return nil
+	}
 
 	err := restClient.Post(
 		context.Background(),

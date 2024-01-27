@@ -40,6 +40,7 @@ func (r *TodoResponse) SetHeaders(headers Headers) error {
 	_ = headers
 	return nil
 }
+func (r *TodoResponse) StreamCallback() StreamCallback { return nil }
 
 //---------------------------------------------
 
@@ -73,6 +74,7 @@ func (r *DeletePostResponse) SetHeaders(headers Headers) error {
 	_ = headers
 	return nil
 }
+func (r *DeletePostResponse) StreamCallback() StreamCallback { return nil }
 
 // ---------------------------------------------
 
@@ -117,6 +119,7 @@ func (r *UpdatePostResponse) SetHeaders(headers Headers) error {
 	_ = headers
 	return nil
 }
+func (r *UpdatePostResponse) StreamCallback() StreamCallback { return nil }
 
 // ---------------------------------------------
 
@@ -162,6 +165,7 @@ func (r *CreatePostResponse) SetHeaders(headers Headers) error {
 	_ = headers
 	return nil
 }
+func (r *CreatePostResponse) StreamCallback() StreamCallback { return nil }
 
 // ---------------------------------------------
 
